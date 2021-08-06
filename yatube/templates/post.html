@@ -1,0 +1,12 @@
+{% extends "base.html" %}  
+  
+{% block content %}  
+  <div class="row">
+      {% include 'template_blocks/author_block.html' with author=post.author %} 
+  
+    <div class="col-md-9">    
+      {% include "template_blocks/post_item.html" with post=post %}
+      {% include "template_blocks/comments.html" with form=form post=post comments=post.comments.all %}
+    </div>  
+  </div>
+{% endblock %} 

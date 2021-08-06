@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Последние обновления на сайте{% endblock %}
+{% block header %}Последние обновления на сайте{% endblock %}
+{% block content %}
+{% load cache %}
+  <div class="container">
+
+    {% include "template_blocks/menu.html" with index_page=True %}
+    {% cache 20 index_page %}
+	    {% for post in page %}
+	      {% include "template_blocks/post_item.html" with post=post %}
+	    {% endfor %}
+    {% endcache %}
+
+    {% include "paginator.html" with items=page paginator=paginator %}
+
+  </div>
+{% endblock %} 

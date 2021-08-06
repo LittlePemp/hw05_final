@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Подписки{% endblock %}
+{% block header %}Подписки{% endblock %}
+{% block content %}
+{% load cache %}
+  <div class="container">
+
+    {% include "template_blocks/menu.html" with index_page=False %}
+    {% for post in page %}
+      {% include "template_blocks/post_item.html" with post=post %}
+    {% endfor %}
+
+    {% include "paginator.html" with items=page paginator=paginator %}
+
+  </div>
+{% endblock %} 

@@ -145,8 +145,8 @@ dmypy.json
 
 .mypy_cache
 
-# папки со статикой и медиа
-static/
-yatube/posts/static/
-yatube/media/
-
+# MY DODGE
+*sent_emails/
+*migrations/
+*static/
+*media/

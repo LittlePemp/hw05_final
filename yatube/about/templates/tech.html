@@ -1,0 +1,39 @@
+<!-- templates/about/author.html -->
+{% extends "base.html" %}
+{% block title %}Технологии{% endblock %}
+{% block content %}
+  <div class="row">
+    <!-- Левый вспомогательный блок -->
+    <div class="col-md-3 mb-3 mt-1">
+      <div class="card">
+        <div class="card-body">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <div class="h3">
+                Технологии
+              </div>
+            </li>
+            <li class="list-group-item">
+              <div class="h6 text-muted">
+                Django<br>
+                Linux Mint<br>
+                Sublime Text 3<br>
+                Tmux<br>
+                Motivation<br>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!-- Тело страницы -->
+    <div class="col-md-9">
+      <div class="card-body">
+        <div class="card-text">                
+          В качестве рабочей машины выступает простенький ноут с подсветкой клавиатуры, чтобы ночью или в сумерках было приятнее печатать. На месте ОС стоит Линукс Минт с установленным редактором Sublime Text 3 и мультиплексором Tmux для удобного пользования консолью. Одно поле для запуска и логов сервера, другое для работы с файлами, папками и т.п., а на третем время. Это занимает черверть экрана слева, а остальное Sublime.<br>
+          Для мотивации вспоминаю все свои мелкие проекты: Игра сапер, Игра шахматы, Программа, заполняющая фото сотнями других фото, на которые я думал, что потрачу 2-5 недель, а уходило 4 дня или же один вечер. Поэтому все проще чем кажется, главное начать.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %} 

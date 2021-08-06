@@ -1,0 +1,43 @@
+{%extends "base.html" %}
+{% include 'static' %}
+{% block title %}Об авторе проекта{% endblock %}
+{% block content %}
+{% load static %}
+{% load user_filters %}
+  <main role="main" class="container">
+    <div class="row">
+      <!-- Левый вспомогательный блок -->
+      <div class="col-md-3 mb-3 mt-1">
+        <div class="card">
+          <div class="card-body">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <div class="h3">
+                  Об авторе
+                </div> 
+              </li>
+              <li class="list-group-item">
+                <div class="h6 text-muted">
+                  <img src="{% static "img/avatar.png" %}" 
+                    width="165" alt="Avatar">
+                  Куэнка Лейва Давид Даниэлевич<br>aka LargePemp
+                  29.12.2001<br>
+                  НИУ МИЭТ '23<br>
+                  {{ social_links|safe }}
+                </div>
+              </li>
+            </ul>                                               
+          </div>                    
+        </div>                
+      </div>
+      <!-- Тело страницы -->
+      <div class="col-md-9">
+        <div class="card-body">                    
+          <div class="card-text">
+            <p>Микрочел, выбившийся из села, в величайший, ведущий ВУЗ вселенной - НИУ МИЭТ на бюджет. Все благодаря прекрасному детству на стройке, где сформировалось мое сознание. 8 часов с самим сабой по 6 дней в неделю позволили обчирикать все возможные темы и сущность бытия. А скаченный в 9 классе АБС паскаль позволил понять, что зарабатывать головой интереснее, чем лепить настенную плитку. <br> Таким образом: *вывод по цели*.</p>
+          </div>                    
+        </div>                
+      </div>            
+    </div>        
+  </main>
+{% endblock %}
