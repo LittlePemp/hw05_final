@@ -18,7 +18,7 @@ class PostPagesTests(TestCase):
             slug='test-test',
             description='Тестовое описание')
 
-        cls.small_gif = (
+        small_gif = (
             b'\x47\x49\x46\x38\x39\x61\x02\x00'
             b'\x01\x00\x80\x00\x00\x00\x00\x00'
             b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
@@ -26,9 +26,9 @@ class PostPagesTests(TestCase):
             b'\x02\x00\x01\x00\x00\x02\x02\x0C'
             b'\x0A\x00\x3B')
 
-        cls.uploaded = SimpleUploadedFile(
+        uploaded = SimpleUploadedFile(
             name='small.gif',
-            content=cls.small_gif,
+            content=small_gif,
             content_type='image/gif')
 
         cls.author = User.objects.create_user(username='Poster')
@@ -38,8 +38,7 @@ class PostPagesTests(TestCase):
             text='Тестовый текст',
             author=cls.author,
             group=cls.group,
-            image=cls.uploaded,
-            id=1)
+            image=uploaded)
 
     @classmethod
     def tearDownClass(cls):
@@ -117,8 +116,10 @@ class PostPagesTests(TestCase):
             follow=True)
         key = make_template_fragment_key('index_page')
         self.assertIsNotNone(cache.get(key))
+        cache.clear()
+        self.test_index_shows_correct_context()
 
-    def test_follow_unfollow_follow_index(self):
+    def test_follow(self):
         self.authorized_client.get(reverse(
             'posts:profile_follow',
             kwargs={'username': PostPagesTests.author.username}))
@@ -127,23 +128,25 @@ class PostPagesTests(TestCase):
                 author=PostPagesTests.author,
                 user=self.user).exists())
 
-        response = self.authorized_client.get(reverse('posts:follow_index'))
-        last_post = response.context['page'][0]
-        self.assertEqual(PostPagesTests.post, last_post)
-
-        response = PostPagesTests.authorized_author.get(
-            reverse('posts:follow_index'))
-        empty_posts = len(response.context['page'])
-        self.assertEqual(empty_posts, 0)
-
-        follow_link = Follow.objects.filter(
-            author=PostPagesTests.author,
-            user=self.user)
-        follow_link.delete()
+    def test_unfollow(self):
+        self.authorized_client.get(reverse(
+            'posts:profile_follow',
+            kwargs={'username': PostPagesTests.author.username}))
+        self.authorized_client.get(reverse(
+            'posts:profile_unfollow',
+            kwargs={'username': PostPagesTests.author.username}))
         self.assertFalse(
             Follow.objects.filter(
                 author=PostPagesTests.author,
                 user=self.user).exists())
+
+    def test_follow_index(self):
+        self.authorized_client.get(reverse(
+            'posts:profile_follow',
+            kwargs={'username': PostPagesTests.author.username}))
+        response = self.authorized_client.get(reverse('posts:follow_index'))
+        post = response.context['page'][0]
+        self.check_post(post)
 
     def check_post(self, post):
         post_text = post.text
@@ -153,9 +156,7 @@ class PostPagesTests(TestCase):
         self.assertEqual(post_text, PostPagesTests.post.text)
         self.assertEqual(post_author, PostPagesTests.post.author)
         self.assertEqual(post_group, PostPagesTests.post.group)
-        self.assertEqual(
-            post_image.name,
-            'posts/' + PostPagesTests.uploaded.name)
+        self.assertEqual(post_image, PostPagesTests.post.image)
 
 
 class PaginatorViewsTest(TestCase):
