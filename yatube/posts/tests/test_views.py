@@ -106,35 +106,33 @@ class PostPagesTests(TestCase):
         response = self.authorized_client.get(reverse('posts:index'))
         last_post = response.context['page'][0]
         post = Post.objects.create(author=self.user, text='Text2')
-        self.assertEqual(last_post, PostPagesTests.post)
+        self.assertNotEqual(last_post, post)
         cache.clear()
         non_cache_response = self.authorized_client.get(reverse('posts:index'))
         non_cache_last_post = non_cache_response.context['page'][0]
         self.assertEqual(non_cache_last_post, post)
 
     def test_follow(self):
-        follows_cnt = Follow.objects.all().count()
+        follows_cnt = Follow.objects.count()
         self.authorized_client.get(reverse(
             'posts:profile_follow',
             kwargs={'username': PostPagesTests.author.username}))
-        follow_link = Follow.objects.get(
-            author=PostPagesTests.author,
-            user=self.user)
-        follows_after_follow = Follow.objects.all().count()
+        follow_link = Follow.objects.latest('id')
+        follows_after_follow = Follow.objects.count()
         self.assertEqual(follow_link.author, PostPagesTests.author)
         self.assertEqual(follow_link.user, self.user)
         self.assertEqual(follows_after_follow, follows_cnt + 1)
 
     def test_unfollow(self):
-        follows_cnt = Follow.objects.all().count()
         self.authorized_client.get(reverse(
             'posts:profile_follow',
             kwargs={'username': PostPagesTests.author.username}))
+        follows_cnt = Follow.objects.count()
         self.authorized_client.get(reverse(
             'posts:profile_unfollow',
             kwargs={'username': PostPagesTests.author.username}))
-        follows_after_unfollow = Follow.objects.all().count()
-        self.assertEqual = (follows_after_unfollow, follows_cnt - 1)
+        follows_after_unfollow = Follow.objects.count()
+        self.assertEqual(follows_after_unfollow, follows_cnt - 1)
 
     def test_follow_index(self):
         self.authorized_client.get(reverse(

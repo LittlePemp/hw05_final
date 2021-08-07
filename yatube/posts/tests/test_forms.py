@@ -161,7 +161,7 @@ class CommentCreateFormTests(TestCase):
         self.assertEqual(last_comment.post, self.post)
 
     def test_not_authorizated_comment(self):
-        comments_cnt = Comment.objects.all().count()
+        comments_cnt = Comment.objects.count()
         form_data = {'text': 'CLOSED'}
         response = self.guest_client.post(reverse(
             'posts:add_comment',
@@ -177,5 +177,5 @@ class CommentCreateFormTests(TestCase):
                 kwargs={
                     'username': self.author.username,
                     'post_id': self.post.id}))
-        comments_cnt_after_guest_response = Comment.objects.all().count()
+        comments_cnt_after_guest_response = Comment.objects.count()
         self.assertEqual(comments_cnt_after_guest_response, comments_cnt)
