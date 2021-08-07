@@ -138,7 +138,7 @@ class CommentCreateFormTests(TestCase):
             author=self.author)
 
     def test_add_comment(self):
-        comments_cnt = Comment.objects.all().count()
+        comments_cnt = Comment.objects.count()
         form_data = {'text': 'NEW COMMENT'}
         response = self.authorized_commenter.post(reverse(
             'posts:add_comment',
