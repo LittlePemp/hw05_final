@@ -20,8 +20,7 @@
           Записей: {{ author.posts.count }}
         </div>
       </li> 
-      {% url 'posts:profile' username=author.username as the_url %}
-      {% if the_url == request.get_full_path %}
+      {% if profile_page %}
         {% if author != request.user %}
         <li class="list-group-item">
           {% if following %}

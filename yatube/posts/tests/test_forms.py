@@ -120,27 +120,45 @@ class PostCreateFormTests(TestCase):
             last_post = Post.objects.latest('id')
             self.assertEqual(last_post.text, self.post.text)
 
+
+class CommentCreateFormTests(TestCase):
+    def setUp(self):
+        self.author = User.objects.create_user(username='Author')
+        self.authorized_client = Client()
+        self.authorized_client.force_login(self.author)
+
+        self.guest_client = Client()
+
+        self.commenter = User.objects.create_user(username='Commenter')
+        self.authorized_commenter = Client()
+        self.authorized_commenter.force_login(self.commenter)
+
+        self.post = Post.objects.create(
+            text='PLS ADD COMMENT',
+            author=self.author)
+
     def test_add_comment(self):
         comments_cnt = Comment.objects.all().count()
         form_data = {'text': 'NEW COMMENT'}
-        response = self.authorized_fake.post(reverse(
+        response = self.authorized_commenter.post(reverse(
             'posts:add_comment',
             kwargs={
-                'username': self.user.username,
+                'username': self.author.username,
                 'post_id': self.post.id}),
             data=form_data,
             follow=True)
+        last_comment = Comment.objects.latest('id')
         self.assertRedirects(
             response,
             reverse(
                 'posts:post',
                 kwargs={
-                    'username': self.user.username,
+                    'username': self.author.username,
                     'post_id': self.post.id}))
-        comments_cnt_response = Comment.objects.filter(
-            post_id=self.post.id,
-            author=self.user_fake).count()
-        self.assertEqual(comments_cnt_response, comments_cnt + 1)
+        self.assertEqual(Comment.objects.count(), comments_cnt + 1)
+        self.assertEqual(last_comment.text, form_data['text'])
+        self.assertEqual(last_comment.author, self.commenter)
+        self.assertEqual(last_comment.post, self.post)
 
     def test_not_authorizated_comment(self):
         comments_cnt = Comment.objects.all().count()
@@ -148,7 +166,7 @@ class PostCreateFormTests(TestCase):
         response = self.guest_client.post(reverse(
             'posts:add_comment',
             kwargs={
-                'username': self.user.username,
+                'username': self.author.username,
                 'post_id': self.post.id}),
             data=form_data,
             follow=True)
@@ -157,7 +175,7 @@ class PostCreateFormTests(TestCase):
             reverse('login') + '?next=' + reverse(
                 'posts:add_comment',
                 kwargs={
-                    'username': self.user.username,
+                    'username': self.author.username,
                     'post_id': self.post.id}))
-        comments_cnt_after_fake_response = Comment.objects.all().count()
-        self.assertEqual(comments_cnt_after_fake_response, comments_cnt)
+        comments_cnt_after_guest_response = Comment.objects.all().count()
+        self.assertEqual(comments_cnt_after_guest_response, comments_cnt)

@@ -2,7 +2,6 @@ import shutil
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.cache import cache
-from django.core.cache.utils import make_template_fragment_key
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -104,41 +103,38 @@ class PostPagesTests(TestCase):
         self.check_post(post)
 
     def test_cache_index(self):
-        self.authorized_client.get(reverse('posts:index'))
-        form_data = {'text': 'Text2'}
-        self.authorized_client.post(
-            reverse(
-                'posts:post_edit',
-                kwargs={
-                    'username': PostPagesTests.post.author.username,
-                    'post_id': PostPagesTests.post.id}),
-            data=form_data,
-            follow=True)
-        key = make_template_fragment_key('index_page')
-        self.assertIsNotNone(cache.get(key))
+        response = self.authorized_client.get(reverse('posts:index'))
+        last_post = response.context['page'][0]
+        post = Post.objects.create(author=self.user, text='Text2')
+        self.assertEqual(last_post, PostPagesTests.post)
         cache.clear()
-        self.test_index_shows_correct_context()
+        non_cache_response = self.authorized_client.get(reverse('posts:index'))
+        non_cache_last_post = non_cache_response.context['page'][0]
+        self.assertEqual(non_cache_last_post, post)
 
     def test_follow(self):
+        follows_cnt = Follow.objects.all().count()
         self.authorized_client.get(reverse(
             'posts:profile_follow',
             kwargs={'username': PostPagesTests.author.username}))
-        self.assertTrue(
-            Follow.objects.filter(
-                author=PostPagesTests.author,
-                user=self.user).exists())
+        follow_link = Follow.objects.get(
+            author=PostPagesTests.author,
+            user=self.user)
+        follows_after_follow = Follow.objects.all().count()
+        self.assertEqual(follow_link.author, PostPagesTests.author)
+        self.assertEqual(follow_link.user, self.user)
+        self.assertEqual(follows_after_follow, follows_cnt + 1)
 
     def test_unfollow(self):
+        follows_cnt = Follow.objects.all().count()
         self.authorized_client.get(reverse(
             'posts:profile_follow',
             kwargs={'username': PostPagesTests.author.username}))
         self.authorized_client.get(reverse(
             'posts:profile_unfollow',
             kwargs={'username': PostPagesTests.author.username}))
-        self.assertFalse(
-            Follow.objects.filter(
-                author=PostPagesTests.author,
-                user=self.user).exists())
+        follows_after_unfollow = Follow.objects.all().count()
+        self.assertEqual = (follows_after_unfollow, follows_cnt - 1)
 
     def test_follow_index(self):
         self.authorized_client.get(reverse(

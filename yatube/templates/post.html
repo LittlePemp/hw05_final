@@ -2,11 +2,11 @@
   
 {% block content %}  
   <div class="row">
-      {% include 'template_blocks/author_block.html' with author=post.author following=following%} 
+      {% include 'template_blocks/author_block.html' with author=post.author following=following profile_page=False %} 
   
     <div class="col-md-9">    
       {% include "template_blocks/post_item.html" with post=post %}
-      {% include "template_blocks/comments.html" with form=form post=post comments=post.comments.all %}
+      {% include "template_blocks/comments.html" with form=form post=post %}
     </div>  
   </div>
 {% endblock %} 

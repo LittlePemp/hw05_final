@@ -25,12 +25,9 @@
             Комментариев: {{ post.comments.count }}
           </div>
         {% endif %}
-        {% url 'posts:post' username=post.author.username post_id=post.id as the_url %}
-        {% if the_url != request.get_full_path %}
-          <a class="btn btn-sm btn-primary" href="{% url 'posts:post' post.author.username post.id %}" role="button">
-            Добавить комментарий
-          </a>
-        {% endif %}
+        <a class="btn btn-sm btn-primary" href="{% url 'posts:post' post.author.username post.id %}" role="button">
+          Добавить комментарий
+        </a>
 
         {% if user == post.author %}
           <a class="btn btn-sm btn-info" href="{% url 'posts:post_edit' post.author.username post.id %}" role="button">
@@ -39,7 +36,7 @@
         {% endif %}
       </div>
 
-      <small class="text-muted">{{ post.pub_date }}</small>
+      <small class="text-muted">{{ post.pub_date|date:"d E Y" }} г.</small>
     </div>
   </div>
 </div> 

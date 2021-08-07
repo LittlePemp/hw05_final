@@ -5,7 +5,7 @@
 {% load cache %}
   <div class="container">
 
-    {% include "template_blocks/menu.html" with index_page=False %}
+    {% include "template_blocks/menu.html" with follow_page=True %}
     {% for post in page %}
       {% include "template_blocks/post_item.html" with post=post %}
     {% endfor %}
